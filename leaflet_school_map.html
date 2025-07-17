@@ -1,89 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>School Location Map</title>
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-sA+4bB7mQ0QVIFDGLvNMbz9H+akU7G7k2zF4h4QJp3s="
-    crossorigin=""
-  />
+  <title>School Locations Map</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+
   <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      padding: 10px;
     }
 
-    h2 {
-      margin-bottom: 0.5rem;
-    }
-
-    #map {
-      height: 500px;
-      width: 100%;
-      border-radius: 8px;
-      margin-top: 10px;
-    }
-
-    #status {
-      margin-top: 10px;
-      font-weight: bold;
+    .loading {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1.2em;
     }
   </style>
 </head>
 <body>
+  <div class="loading">Loading school locations...</div>
+  <div id="map" style="display:none;"></div>
 
-  <h2>School Map Based on Location</h2>
-  <div id="map"></div>
-  <div id="status">Loading school locations...</div>
-
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-o9N1jvntX2v9C/ZP7fDnJ6uCzJwPGdQJIFfP2r3dSZE="
-    crossorigin=""
-  ></script>
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 
   <script>
-    // REPLACE THIS with your actual deployed Web App URL
-    const webAppURL = 'https://script.google.com/macros/s/YOUR_WEB_APP_URL_HERE/exec';
+    const map = L.map('map').setView([39.8283, -98.5795], 4); // Center of USA
 
-    const map = L.map('map').setView([39.8283, -98.5795], 4); // Center USA by default
-
-    // Add base layer (OpenStreetMap - free)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 18,
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    fetch(webAppURL)
-      .then((response) => response.json())
-      .then((data) => {
+    // 👉 Replace this with your actual Web App URL
+    const scriptURL = 'https://script.google.com/a/macros/learningmate.com/s/AKfycbzzJUdukkbL9t-4Cn27DOJx6XtX-o82d1v59Lf9KbRoKPFTkmTqWhQ2pUW90HZd2MnkGw/exec';
+
+    fetch(scriptURL)
+      .then(response => response.json())
+      .then(data => {
         if (!data || data.length === 0) {
-          document.getElementById('status').textContent =
-            'No matching school locations found.';
+          document.querySelector('.loading').innerText = "No school data found.";
           return;
         }
 
-        document.getElementById('status').textContent =
-          'Showing schools for: ' + data[0].location;
+        document.querySelector('.loading').style.display = "none";
+        document.getElementById('map').style.display = "block";
 
-        data.forEach((school) => {
-          const marker = L.marker([school.lat, school.lng]).addTo(map);
-          marker.bindPopup(`<b>${school.name}</b>`);
+        data.forEach(school => {
+          const marker = L.marker([school.lat, school.lng])
+            .addTo(map)
+            .bindPopup(`<strong>${school.name}</strong><br>${school.location}`);
         });
 
-        // Center the map on the first school
-        map.setView([data[0].lat, data[0].lng], 12);
+        const bounds = data.map(s => [s.lat, s.lng]);
+        map.fitBounds(bounds);
       })
-      .catch((err) => {
-        document.getElementById('status').textContent =
-          'Failed to load school data.';
-        console.error(err);
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        document.querySelector('.loading').innerText = "Failed to load map data.";
       });
   </script>
-
 </body>
 </html>
