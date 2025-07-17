@@ -1,73 +1,78 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>School Locations Map</title>
+  <title>School Location Map</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  
   <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
-
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+e2eS8t7zF4uD9u+CZkDdLd+Z2vGxN72cuXQ64alw="
+    crossorigin=""/>
+  
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-VII8Z5LMj+DazEa74U/HJ5c1brFIAH0l1VGxuGKy2gk="
+    crossorigin=""></script>
+  
   <style>
-    #map {
-      height: 100vh;
-      width: 100%;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-    }
-
-    .loading {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 1.2em;
+    body { margin:0; padding:0; }
+    #map { height: 100vh; }
+    #status {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 5px 10px;
+      z-index: 1000;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="loading">Loading school locations...</div>
-  <div id="map" style="display:none;"></div>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<div id="status">Loading school locations...</div>
+<div id="map"></div>
 
-  <script>
-    const map = L.map('map').setView([39.8283, -98.5795], 4); // Center of USA
+<script>
+  const map = L.map('map').setView([39.8283, -98.5795], 4); // Center of USA
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    maxZoom: 18,
+  }).addTo(map);
 
-    // 👉 Replace this with your actual Web App URL
-    const scriptURL = 'https://script.google.com/a/macros/learningmate.com/s/AKfycbzzJUdukkbL9t-4Cn27DOJx6XtX-o82d1v59Lf9KbRoKPFTkmTqWhQ2pUW90HZd2MnkGw/exec';
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbzzJUdukkbL9t-4Cn27DOJx6XtX-o82d1v59Lf9KbRoKPFTkmTqWhQ2pUW90HZd2MnkGw/exec';
 
-    fetch(scriptURL)
-      .then(response => response.json())
-      .then(data => {
-        if (!data || data.length === 0) {
-          document.querySelector('.loading').innerText = "No school data found.";
-          return;
-        }
+  fetch(scriptURL)
+    .then(response => response.json())
+    .then(data => {
+      if (data.length === 0) {
+        document.getElementById('status').textContent = "No matching schools found.";
+        return;
+      }
 
-        document.querySelector('.loading').style.display = "none";
-        document.getElementById('map').style.display = "block";
+      data.forEach(school => {
+        const lat = parseFloat(school.Latitude);
+        const lon = parseFloat(school.Longitude);
+        const name = school["School Name"];
+        const location = school["User Location"];
 
-        data.forEach(school => {
-          const marker = L.marker([school.lat, school.lng])
-            .addTo(map)
-            .bindPopup(`<strong>${school.name}</strong><br>${school.location}`);
-        });
-
-        const bounds = data.map(s => [s.lat, s.lng]);
-        map.fitBounds(bounds);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        document.querySelector('.loading').innerText = "Failed to load map data.";
+        L.marker([lat, lon]).addTo(map)
+          .bindPopup(`<b>${name}</b><br>${location}`);
       });
-  </script>
+
+      // Center the map on the first school
+      const first = data[0];
+      map.setView([parseFloat(first.Latitude), parseFloat(first.Longitude)], 12);
+
+      document.getElementById('status').style.display = "none";
+    })
+    .catch(error => {
+      console.error('Failed to load data:', error);
+      document.getElementById('status').textContent = "Failed to load data.";
+    });
+</script>
+
 </body>
 </html>
