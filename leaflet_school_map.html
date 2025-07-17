@@ -1,28 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>School Map - Manhattan, NY</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>School Location Map</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+4bB7mQ0QVIFDGLvNMbz9H+akU7G7k2zF4h4QJp3s="
+    crossorigin=""
+  />
   <style>
-    #map { height: 100vh; width: 100%; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      padding: 10px;
+    }
+
+    h2 {
+      margin-bottom: 0.5rem;
+    }
+
+    #map {
+      height: 500px;
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    #status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <div id="map"></div>
-  <script>
-    const map = L.map('map').setView([40.786, -73.9527], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-    L.marker([40.786, -73.9527]).addTo(map).bindPopup('<b>Hunter College High School</b>');
-L.marker([40.7385, -73.9848]).addTo(map).bindPopup('<b>Baruch College Campus HS</b>');
-L.marker([40.7175, -73.986]).addTo(map).bindPopup('<b>NEST+M</b>');
-L.marker([40.7171, -74.012]).addTo(map).bindPopup('<b>Stuyvesant High School</b>');
-L.marker([40.734, -73.989]).addTo(map).bindPopup('<b>The Clinton School</b>');
 
+  <h2>School Map Based on Location</h2>
+  <div id="map"></div>
+  <div id="status">Loading school locations...</div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1jvntX2v9C/ZP7fDnJ6uCzJwPGdQJIFfP2r3dSZE="
+    crossorigin=""
+  ></script>
+
+  <script>
+    // REPLACE THIS with your actual deployed Web App URL
+    const webAppURL = 'https://script.google.com/macros/s/YOUR_WEB_APP_URL_HERE/exec';
+
+    const map = L.map('map').setView([39.8283, -98.5795], 4); // Center USA by default
+
+    // Add base layer (OpenStreetMap - free)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
+
+    fetch(webAppURL)
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data || data.length === 0) {
+          document.getElementById('status').textContent =
+            'No matching school locations found.';
+          return;
+        }
+
+        document.getElementById('status').textContent =
+          'Showing schools for: ' + data[0].location;
+
+        data.forEach((school) => {
+          const marker = L.marker([school.lat, school.lng]).addTo(map);
+          marker.bindPopup(`<b>${school.name}</b>`);
+        });
+
+        // Center the map on the first school
+        map.setView([data[0].lat, data[0].lng], 12);
+      })
+      .catch((err) => {
+        document.getElementById('status').textContent =
+          'Failed to load school data.';
+        console.error(err);
+      });
   </script>
+
 </body>
 </html>
