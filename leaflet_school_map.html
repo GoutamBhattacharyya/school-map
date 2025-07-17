@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>School Map - Manhattan, NY</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    #map { height: 100vh; width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    const map = L.map('map').setView([40.786, -73.9527], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    L.marker([40.786, -73.9527]).addTo(map).bindPopup('<b>Hunter College High School</b>');
+L.marker([40.7385, -73.9848]).addTo(map).bindPopup('<b>Baruch College Campus HS</b>');
+L.marker([40.7175, -73.986]).addTo(map).bindPopup('<b>NEST+M</b>');
+L.marker([40.7171, -74.012]).addTo(map).bindPopup('<b>Stuyvesant High School</b>');
+L.marker([40.734, -73.989]).addTo(map).bindPopup('<b>The Clinton School</b>');
+
+  </script>
+</body>
+</html>
