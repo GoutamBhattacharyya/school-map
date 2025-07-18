@@ -1,0 +1,184 @@
+{
+  "schools": [
+    {
+      "name": "PS 101 Manhattan",
+      "lat": 40.7128,
+      "lon": -74.006,
+      "area": "New York (NY)"
+    },
+    {
+      "name": "Bronx Science Academy",
+      "lat": 40.877,
+      "lon": -73.878,
+      "area": "New York (NY)"
+    },
+    {
+      "name": "Queens Public High",
+      "lat": 40.7282,
+      "lon": -73.7949,
+      "area": "New York (NY)"
+    },
+    {
+      "name": "Brooklyn Magnet School",
+      "lat": 40.6782,
+      "lon": -73.9442,
+      "area": "New York (NY)"
+    },
+    {
+      "name": "NY Academy Downtown",
+      "lat": 40.716,
+      "lon": -74.009,
+      "area": "New York (NY)"
+    },
+    {
+      "name": "Roosevelt School",
+      "lat": 40.7484,
+      "lon": -73.9857,
+      "area": "New York (NY)"
+    },
+    {
+      "name": "Washington Charter NYC",
+      "lat": 40.7306,
+      "lon": -73.9866,
+      "area": "New York (NY)"
+    },
+    {
+      "name": "York High School",
+      "lat": 40.7359,
+      "lon": -74.0039,
+      "area": "New York (NY)"
+    },
+    {
+      "name": "Parkside School NY",
+      "lat": 40.7397,
+      "lon": -73.9915,
+      "area": "New York (NY)"
+    },
+    {
+      "name": "Midtown Science Center",
+      "lat": 40.7527,
+      "lon": -73.9772,
+      "area": "New York (NY)"
+    },
+    {
+      "name": "Newark High School",
+      "lat": 40.7357,
+      "lon": -74.1724,
+      "area": "New Jersey (NJ)"
+    },
+    {
+      "name": "Jersey City Academy",
+      "lat": 40.7178,
+      "lon": -74.0431,
+      "area": "New Jersey (NJ)"
+    },
+    {
+      "name": "Hoboken STEM School",
+      "lat": 40.743,
+      "lon": -74.0324,
+      "area": "New Jersey (NJ)"
+    },
+    {
+      "name": "Elizabeth Public School",
+      "lat": 40.6639,
+      "lon": -74.2107,
+      "area": "New Jersey (NJ)"
+    },
+    {
+      "name": "Trenton Central School",
+      "lat": 40.2206,
+      "lon": -74.7597,
+      "area": "New Jersey (NJ)"
+    },
+    {
+      "name": "East Orange Magnet",
+      "lat": 40.7673,
+      "lon": -74.2048,
+      "area": "New Jersey (NJ)"
+    },
+    {
+      "name": "Bayonne Charter School",
+      "lat": 40.6687,
+      "lon": -74.1143,
+      "area": "New Jersey (NJ)"
+    },
+    {
+      "name": "Union City High",
+      "lat": 40.7796,
+      "lon": -74.0238,
+      "area": "New Jersey (NJ)"
+    },
+    {
+      "name": "Paterson Tech School",
+      "lat": 40.9147,
+      "lon": -74.1628,
+      "area": "New Jersey (NJ)"
+    },
+    {
+      "name": "Hackensack Public School",
+      "lat": 40.8859,
+      "lon": -74.0435,
+      "area": "New Jersey (NJ)"
+    },
+    {
+      "name": "Stamford Central High",
+      "lat": 41.0534,
+      "lon": -73.5387,
+      "area": "Connecticut (CT)"
+    },
+    {
+      "name": "Bridgeport Magnet School",
+      "lat": 41.1792,
+      "lon": -73.1894,
+      "area": "Connecticut (CT)"
+    },
+    {
+      "name": "New Haven Science Academy",
+      "lat": 41.3083,
+      "lon": -72.9279,
+      "area": "Connecticut (CT)"
+    },
+    {
+      "name": "Norwalk Public School",
+      "lat": 41.1176,
+      "lon": -73.4082,
+      "area": "Connecticut (CT)"
+    },
+    {
+      "name": "Greenwich High School",
+      "lat": 41.033,
+      "lon": -73.6297,
+      "area": "Connecticut (CT)"
+    },
+    {
+      "name": "Stratford Academy",
+      "lat": 41.1845,
+      "lon": -73.1332,
+      "area": "Connecticut (CT)"
+    },
+    {
+      "name": "West Haven Tech School",
+      "lat": 41.2707,
+      "lon": -72.9468,
+      "area": "Connecticut (CT)"
+    },
+    {
+      "name": "Fairfield Prep School",
+      "lat": 41.1408,
+      "lon": -73.2613,
+      "area": "Connecticut (CT)"
+    },
+    {
+      "name": "Danbury Magnet School",
+      "lat": 41.3948,
+      "lon": -73.454,
+      "area": "Connecticut (CT)"
+    },
+    {
+      "name": "Milford Regional School",
+      "lat": 41.2223,
+      "lon": -73.0565,
+      "area": "Connecticut (CT)"
+    }
+  ]
+}
