@@ -7,7 +7,6 @@
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha512-sA+ePHZJ04kPwC1ZT+nRoq6u58zdpSYr9cxUOnScZ+h6o3n2ZX6F1bBwZ5VXvQUFNQzWmxxzYdFLlUJKf1F1cA=="
     crossorigin=""
   />
   <style>
@@ -73,7 +72,7 @@
       });
 
       try {
-        const res = await fetch("https://script.google.com/a/macros/learningmate.com/s/AKfycby8n2DMGLvNAKRj1h1Rh8ktNQpeHsTFsBkPHthbP0nlvrB5QGpoqoyYwZylM3J3DtQF7w/exec");
+        const res = await fetch("https://script.googleusercontent.com/a/macros/learningmate.com/echo?user_content_key=AehSKLgsE5uxlVNJ2oaW9_xPypERyWMCv_mr1w2HNb-ANs20xl8oCH76tLbh0lyNo0BzWadEUKh0VQLBrpgv7vYDSqinQRq1pz2yGDBHRtADRf0_PRFpHfBPWsCgMNimFZmxDoqGBGW76VklLrZ0cRcETfv0KBJ-31OB-4YIhmzW9OMYoBHz4UeaoYM7tdBWBpboCSqU0GyfXUYX_OhBi13KQcteNG81muCp4BF9O9FTCrhRAeBSjZF2KbqoxbzCWjiSJQ3Jj9fqAelyT7kHwoAsjC5XyNpoEGesurG0qMj5b1wxUaV5M1YMRVytRw3Oqw&lib=MvxoU1hFqaz9AlbZh_WGZ8lbt3KqP1iQF");
         const json = await res.json();
         const allSchools = json.schools;
 
