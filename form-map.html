@@ -65,15 +65,20 @@
     let markers = [];
 
     fetch("https://goutambhattacharyya.github.io/school-map/all-schools.json")
-      .then(res => res.json())
-      .then(data => {
-        schoolData = data.schools; // ✅ Access the correct array
-        document.getElementById("status").textContent = "Data loaded. Enter a location.";
-      })
-      .catch(err => {
-        document.getElementById("status").textContent = "Failed to load school data.";
-        console.error(err);
-      });
+  .then(res => res.json())
+  .then(data => {
+    if (data.schools && Array.isArray(data.schools)) {
+      schoolData = data.schools;
+      document.getElementById("status").textContent = "Data loaded. Enter a location.";
+    } else {
+      throw new Error("Invalid JSON format: 'schools' array not found.");
+    }
+  })
+  .catch(err => {
+    document.getElementById("status").textContent = "Failed to load school data.";
+    console.error("Data loading error:", err);
+  });
+
 
     function clearMarkers() {
       markers.forEach(marker => map.removeLayer(marker));
