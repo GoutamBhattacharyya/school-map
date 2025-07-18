@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>School Location Form</title>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        max-width: 600px;
+        margin: auto;
+      }
+      input, button {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Find Nearby Schools</h2>
+    <form id="schoolForm">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="text" name="contact" placeholder="Contact (Phone or Email)" required />
+      <input type="text" name="location" placeholder="Enter Location (e.g., New York (NY))" required />
+      <button type="submit">Submit</button>
+    </form>
+
+    <script>
+      document.getElementById("schoolForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const location = this.location.value.trim();
+        const encodedLocation = encodeURIComponent(location);
+        const mapUrl = `https://goutambhattacharyya.github.io/school-map/map.html?area=${encodedLocation}`;
+        window.location.href = mapUrl;
+      });
+    </script>
+  </body>
+</html>
