@@ -2,125 +2,114 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>School Locator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>School Map by Location</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <style>
-    * { box-sizing: border-box; }
     body {
+      display: flex;
       margin: 0;
       font-family: Arial, sans-serif;
-      display: flex;
       height: 100vh;
     }
-    .form-section {
-      width: 35%;
+    .left {
+      width: 30%;
       padding: 20px;
-      background-color: #f5f5f5;
+      background: #f0f0f0;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     }
-    .form-section h2 {
-      margin-bottom: 20px;
-    }
-    input, button {
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      font-size: 16px;
+    .right {
+      flex: 1;
+      position: relative;
     }
     #map {
-      width: 65%;
-      height: 100vh;
+      height: 100%;
+      width: 100%;
+    }
+    label, input, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    #status {
+      color: green;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
-  <div class="form-section">
-    <h2>Find Nearby Schools</h2>
-    <form id="schoolForm">
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="text" name="contact" placeholder="Contact Info" required />
-      <input type="text" name="location" placeholder="Location (e.g., New York (NY))" required />
-      <button type="submit">Show Schools</button>
+  <div class="left">
+    <h2>Search Nearby Schools</h2>
+    <form id="searchForm">
+      <label for="location">Enter Area (e.g., New York (NY)):</label>
+      <input type="text" id="location" required />
+      <button type="submit">Search</button>
     </form>
-    <p id="status" style="color: gray;"></p>
+    <div id="status">Loading school data...</div>
   </div>
 
-  <div id="map"></div>
+  <div class="right">
+    <div id="map"></div>
+  </div>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    const map = L.map('map').setView([40.7128, -74.0060], 10); // Default view
-    const form = document.getElementById("schoolForm");
-    const status = document.getElementById("status");
-
-    // Add tile layer
+    let map = L.map('map').setView([40.7128, -74.0060], 10);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     let schoolData = [];
+    let markers = [];
 
-    // Fetch JSON data
     fetch("https://goutambhattacharyya.github.io/school-map/all-schools.json")
       .then(res => res.json())
       .then(data => {
-        schoolData = data;
-        status.textContent = "Data loaded.";
+        schoolData = data.schools; // ✅ Access the correct array
+        document.getElementById("status").textContent = "Data loaded. Enter a location.";
       })
       .catch(err => {
-        status.textContent = "Failed to load school data.";
+        document.getElementById("status").textContent = "Failed to load school data.";
         console.error(err);
       });
 
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      const locationInput = form.location.value.trim();
+    function clearMarkers() {
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+    }
 
-      if (!locationInput) return;
-
-      const filtered = schoolData.filter(s => s.Area.toLowerCase() === locationInput.toLowerCase());
-
-      if (filtered.length === 0) {
-        status.textContent = "No schools found for: " + locationInput;
+    function addMarkers(schools) {
+      clearMarkers();
+      if (schools.length === 0) {
+        document.getElementById("status").textContent = "No schools found for this area.";
         return;
       }
 
-      status.textContent = `Showing ${filtered.length} schools near ${locationInput}`;
-      
-      // Remove old markers and circles
-      map.eachLayer(layer => {
-        if (layer instanceof L.Marker || layer instanceof L.Circle) {
-          map.removeLayer(layer);
-        }
-      });
+      const group = [];
 
-      const latLngs = [];
-
-      filtered.forEach(school => {
-        const marker = L.marker([school.Latitude, school.Longitude])
+      schools.forEach(school => {
+        const marker = L.marker([school.lat, school.lon])
           .addTo(map)
-          .bindPopup(`<b>${school["School Name"]}</b><br>${school.Area}`);
-        latLngs.push([school.Latitude, school.Longitude]);
+          .bindPopup(`<strong>${school.name}</strong><br>${school.area}`);
+        markers.push(marker);
+        group.push([school.lat, school.lon]);
       });
 
-      if (latLngs.length > 0) {
-        const bounds = L.latLngBounds(latLngs);
-        map.fitBounds(bounds.pad(0.2));
+      // Zoom map to fit all markers
+      const bounds = L.latLngBounds(group);
+      map.fitBounds(bounds);
+      document.getElementById("status").textContent = `${schools.length} schools found.`;
+    }
 
-        // Optional: draw 10 km circle from first school
-        L.circle(latLngs[0], {
-          radius: 10000,
-          color: "red",
-          fillOpacity: 0.1
-        }).addTo(map);
-      }
+    document.getElementById("searchForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const input = document.getElementById("location").value.trim();
+      const results = schoolData.filter(s => s.area.toLowerCase() === input.toLowerCase());
+      addMarkers(results);
     });
   </script>
+
 </body>
 </html>
