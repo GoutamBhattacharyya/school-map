@@ -33,11 +33,44 @@
     const queryParams = new URLSearchParams(window.location.search);
     const userArea = queryParams.get("area") || "New York (NY)";
 
-    // Set title
     document.getElementById("map-title").innerText =
       `Nearby Schools within 10 km of "${userArea}"`;
 
-    // Replace this with your actual Google Apps Script Web App URL
-    const apiUrl = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec?area=" + encodeURIComponent(userArea);
+    // ✅ Replace this with your actual Apps Script Web App URL
+    const apiUrl = "https://script.google.com/macros/s/AKfycbzFyg6EK2KC06vg53gmTaNGpRYOfllh03x-YPRJdZiNRiITH5NFvoytL7yQ-WeILZ0r/exec?area=" + encodeURIComponent(userArea);
 
-    fet
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        const { schools } = data;
+        if (!schools.length) {
+          document.getElementById("map").innerHTML = "No schools found nearby.";
+          return;
+        }
+
+        const center = [schools[0].lat, schools[0].lon];
+        const map = L.map('map').setView(center, 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        schools.forEach(school => {
+          L.marker([school.lat, school.lon])
+            .addTo(map)
+            .bindPopup(`<b>${school.name}</b><br>Lat: ${school.lat}<br>Lng: ${school.lon}`);
+        });
+
+        L.circle(center, {
+          color: 'red',
+          fillOpacity: 0.1,
+          radius: 10000
+        }).addTo(map);
+      })
+      .catch(err => {
+        console.error("Map Load Error:", err);
+        document.getElementById("map").innerText = "Failed to load map.";
+      });
+  </script>
+</body>
+</html>
