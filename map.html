@@ -31,7 +31,8 @@
 
   <script>
     const queryParams = new URLSearchParams(window.location.search);
-    const userArea = queryParams.get("area") || "New York (NY)";
+    const userArea = "New York (NY)";
+    fetch("ny-schools.json")
 
     document.getElementById("map-title").innerText =
       `Nearby Schools within 10 km of "${userArea}"`;
