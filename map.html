@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Nearby Schools Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    h3 {
+      margin: 10px;
+      text-align: center;
+    }
+  </style>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+  <h3 id="map-title">Nearby Schools</h3>
+  <div id="map">Loading map...</div>
+
+  <script>
+    const queryParams = new URLSearchParams(window.location.search);
+    const userArea = queryParams.get("area") || "New York (NY)";
+
+    // Set title
+    document.getElementById("map-title").innerText =
+      `Nearby Schools within 10 km of "${userArea}"`;
+
+    // Replace this with your actual Google Apps Script Web App URL
+    const apiUrl = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec?area=" + encodeURIComponent(userArea);
+
+    fet
