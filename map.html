@@ -30,10 +30,7 @@
   <div id="map">Loading map...</div>
 
   <script>
-    // Get the "area" query parameter from the URL
     const areaParam = new URLSearchParams(window.location.search).get("area") || "New York (NY)";
-
-    // Choose JSON file based on area
     const fileMap = {
       "New York (NY)": "ny-schools.json",
       "New Jersey (NJ)": "nj-schools.json",
@@ -41,6 +38,51 @@
     };
 
     const fileName = fileMap[areaParam];
-
     if (!fileName) {
-      document.getElementById("map").inner
+      document.getElementById("map").innerText = "Invalid area.";
+      throw new Error("Invalid or unsupported area.");
+    }
+
+    document.getElementById("map-title").textContent = `Nearby Schools within 10 km of "${areaParam}"`;
+
+    fetch(fileName)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch JSON");
+        return res.json();
+      })
+      .then(data => {
+        console.log("✅ JSON Loaded:", data);
+
+        const schools = data.schools;
+        if (!schools || !schools.length) {
+          document.getElementById("map").innerText = "No schools found.";
+          return;
+        }
+
+        const center = [schools[0].lat, schools[0].lon];
+        const map = L.map("map").setView(center, 12);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "© OpenStreetMap contributors"
+        }).addTo(map);
+
+        schools.forEach(school => {
+          console.log(`📍 Adding marker: ${school.name}`);
+          L.marker([school.lat, school.lon])
+            .addTo(map)
+            .bindPopup(`<b>${school.name}</b>`);
+        });
+
+        L.circle(center, {
+          color: "red",
+          fillOpacity: 0.1,
+          radius: 10000
+        }).addTo(map);
+      })
+      .catch(err => {
+        console.error("❌ Map Load Error:", err);
+        document.getElementById("map").innerText = "Failed to load map.";
+      });
+  </script>
+</body>
+</html>
