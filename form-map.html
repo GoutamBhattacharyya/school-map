@@ -40,6 +40,11 @@
     h2 {
       margin-bottom: 20px;
     }
+
+    #status {
+      color: #555;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -62,7 +67,6 @@
     let markers = [];
     let schoolData = [];
 
-    // Initialize map
     function initMap(centerLat = 40.7128, centerLon = -74.006) {
       map = L.map("map").setView([centerLat, centerLon], 11);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -70,7 +74,7 @@
       }).addTo(map);
     }
 
-    // Load school data
+    // Load JSON school data
     fetch("https://goutambhattacharyya.github.io/school-map/all-schools.json")
       .then((res) => res.json())
       .then((data) => {
@@ -78,38 +82,38 @@
           schoolData = data.schools;
           document.getElementById("status").textContent = "Data loaded. Enter location.";
         } else {
-          throw new Error("Invalid data format");
+          throw new Error("Invalid JSON format");
         }
       })
       .catch((err) => {
-        console.error(err);
-        document.getElementById("status").textContent = "Failed to load data.";
+        console.error("Error loading data:", err);
+        document.getElementById("status").textContent = "Failed to load school data.";
       });
 
-    // Form submission
     document.getElementById("locationForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
       const location = document.getElementById("location").value.trim();
-
       if (!location) {
         alert("Please enter a location.");
         return;
       }
 
       // Clear old markers
-      markers.forEach((marker) => map.removeLayer(marker));
+      markers.forEach(marker => map.removeLayer(marker));
       markers = [];
 
-      const results = schoolData.schools.filter(
-        (s) => s.area.toLowerCase() === location.toLowerCase()
+      // Filter based on location match (case-insensitive)
+      const results = schoolData.filter(
+        s => s.area.toLowerCase() === location.toLowerCase()
       );
 
       if (results.length === 0) {
-        alert("No schools found for this location.");
+        document.getElementById("status").textContent = "No schools found for this location.";
         return;
       }
 
+      // Center map to average coordinates
       const latCenter = results.reduce((sum, s) => sum + s.lat, 0) / results.length;
       const lonCenter = results.reduce((sum, s) => sum + s.lon, 0) / results.length;
       map.setView([latCenter, lonCenter], 12);
