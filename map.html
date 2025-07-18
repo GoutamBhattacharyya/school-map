@@ -30,48 +30,17 @@
   <div id="map">Loading map...</div>
 
   <script>
-    const queryParams = new URLSearchParams(window.location.search);
-    const userArea = "New York (NY)";
-    fetch("ny-schools.json")
+    // Get the "area" query parameter from the URL
+    const areaParam = new URLSearchParams(window.location.search).get("area") || "New York (NY)";
 
-    document.getElementById("map-title").innerText =
-      `Nearby Schools within 10 km of "${userArea}"`;
+    // Choose JSON file based on area
+    const fileMap = {
+      "New York (NY)": "ny-schools.json",
+      "New Jersey (NJ)": "nj-schools.json",
+      "Connecticut (CT)": "ct-schools.json"
+    };
 
-    // ✅ Replace this with your actual Apps Script Web App URL
-    const apiUrl = "https://script.google.com/macros/s/AKfycbzFyg6EK2KC06vg53gmTaNGpRYOfllh03x-YPRJdZiNRiITH5NFvoytL7yQ-WeILZ0r/exec?area=" + encodeURIComponent(userArea);
+    const fileName = fileMap[areaParam];
 
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => {
-        const { schools } = data;
-        if (!schools.length) {
-          document.getElementById("map").innerHTML = "No schools found nearby.";
-          return;
-        }
-
-        const center = [schools[0].lat, schools[0].lon];
-        const map = L.map('map').setView(center, 13);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        schools.forEach(school => {
-          L.marker([school.lat, school.lon])
-            .addTo(map)
-            .bindPopup(`<b>${school.name}</b><br>Lat: ${school.lat}<br>Lng: ${school.lon}`);
-        });
-
-        L.circle(center, {
-          color: 'red',
-          fillOpacity: 0.1,
-          radius: 10000
-        }).addTo(map);
-      })
-      .catch(err => {
-        console.error("Map Load Error:", err);
-        document.getElementById("map").innerText = "Failed to load map.";
-      });
-  </script>
-</body>
-</html>
+    if (!fileName) {
+      document.getElementById("map").inner
