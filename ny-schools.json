@@ -1,0 +1,7 @@
+{
+  "area": "New York (NY)",
+  "schools": [
+    { "name": "ABC School", "lat": 40.7128, "lon": -74.006 },
+    { "name": "XYZ School", "lat": 40.715, "lon": -74.001 }
+  ]
+}
