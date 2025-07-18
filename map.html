@@ -30,49 +30,46 @@
   <div id="map">Loading map...</div>
 
   <script>
-    const areaParam = new URLSearchParams(window.location.search).get("area") || "New York (NY)";
-    const fileMap = {
-      "New York (NY)": "ny-schools.json",
-      "New Jersey (NJ)": "nj-schools.json",
-      "Connecticut (CT)": "ct-schools.json"
-    };
+    const areaParam = new URLSearchParams(window.location.search).get("area");
+    const mapTitle = document.getElementById("map-title");
 
-    const fileName = fileMap[areaParam];
-    if (!fileName) {
-      document.getElementById("map").innerText = "Invalid area.";
-      throw new Error("Invalid or unsupported area.");
+    if (!areaParam) {
+      document.getElementById("map").innerText = "Area not specified in URL.";
+      mapTitle.textContent = "No Area Selected";
+      throw new Error("Missing area query parameter");
     }
 
-    document.getElementById("map-title").textContent = `Nearby Schools within 10 km of "${areaParam}"`;
+    mapTitle.textContent = `Nearby Schools within 10 km of "${areaParam}"`;
 
-    fetch(fileName)
+    fetch("all-schools.json")
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch JSON");
         return res.json();
       })
       .then(data => {
-        console.log("✅ JSON Loaded:", data);
+        const filteredSchools = data.schools.filter(
+          school => school.area === areaParam
+        );
 
-        const schools = data.schools;
-        if (!schools || !schools.length) {
-          document.getElementById("map").innerText = "No schools found.";
+        if (!filteredSchools.length) {
+          document.getElementById("map").innerText = "No schools found for this area.";
           return;
         }
 
-        const center = [schools[0].lat, schools[0].lon];
+        const center = [filteredSchools[0].lat, filteredSchools[0].lon];
         const map = L.map("map").setView(center, 12);
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution: "© OpenStreetMap contributors"
         }).addTo(map);
 
-        schools.forEach(school => {
-          console.log(`📍 Adding marker: ${school.name}`);
+        filteredSchools.forEach(school => {
           L.marker([school.lat, school.lon])
             .addTo(map)
             .bindPopup(`<b>${school.name}</b>`);
         });
 
+        // Red circle around center
         L.circle(center, {
           color: "red",
           fillOpacity: 0.1,
@@ -80,7 +77,7 @@
         }).addTo(map);
       })
       .catch(err => {
-        console.error("❌ Map Load Error:", err);
+        console.error("Map Load Error:", err);
         document.getElementById("map").innerText = "Failed to load map.";
       });
   </script>
