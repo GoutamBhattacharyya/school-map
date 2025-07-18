@@ -54,7 +54,7 @@
       <input type="text" id="name" placeholder="Your Name" />
       <input type="text" id="contact" placeholder="Contact (Phone or Email)" />
       <input type="text" id="location" placeholder="Location (e.g., New York (NY))" required />
-      <button type="submit">Search</button>
+      <button type="submit" disabled>Search</button>
     </form>
     <p id="status">Loading school data...</p>
   </div>
@@ -65,7 +65,7 @@
   <script>
     let map;
     let markers = [];
-    let schoolData = [];
+    let schoolData = null;
 
     function initMap(centerLat = 40.7128, centerLon = -74.006) {
       map = L.map("map").setView([centerLat, centerLon], 11);
@@ -81,6 +81,7 @@
         if (data.schools && Array.isArray(data.schools)) {
           schoolData = data.schools;
           document.getElementById("status").textContent = "Data loaded. Enter location.";
+          document.querySelector("#locationForm button").disabled = false;
         } else {
           throw new Error("Invalid JSON format");
         }
@@ -99,11 +100,15 @@
         return;
       }
 
+      if (!Array.isArray(schoolData)) {
+        alert("School data not loaded yet. Please wait a few seconds.");
+        return;
+      }
+
       // Clear old markers
       markers.forEach(marker => map.removeLayer(marker));
       markers = [];
 
-      // Filter based on location match (case-insensitive)
       const results = schoolData.filter(
         s => s.area.toLowerCase() === location.toLowerCase()
       );
@@ -113,7 +118,6 @@
         return;
       }
 
-      // Center map to average coordinates
       const latCenter = results.reduce((sum, s) => sum + s.lat, 0) / results.length;
       const lonCenter = results.reduce((sum, s) => sum + s.lon, 0) / results.length;
       map.setView([latCenter, lonCenter], 12);
