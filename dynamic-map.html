@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nearby Schools Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha512-sA+ePHZJ04kPwC1ZT+nRoq6u58zdpSYr9cxUOnScZ+h6o3n2ZX6F1bBwZ5VXvQUFNQzWmxxzYdFLlUJKf1F1cA=="
+    crossorigin=""
+  />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      margin: 0;
+      height: 100vh;
+    }
+    #form-section {
+      flex: 1;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    #map {
+      flex: 2;
+      height: 100%;
+    }
+    input, button {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="form-section">
+    <h2>Find Nearby Schools</h2>
+    <form id="searchForm">
+      <input type="text" id="name" placeholder="Name" />
+      <input type="text" id="contact" placeholder="Contact (Phone or Email)" />
+      <input type="text" id="location" placeholder="Location (e.g. New York (NY))" required />
+      <button type="submit">Search</button>
+    </form>
+    <p id="status"></p>
+  </div>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const form = document.getElementById("searchForm");
+    const status = document.getElementById("status");
+    const map = L.map('map').setView([40.7128, -74.006], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const area = document.getElementById("location").value.trim();
+
+      if (!area) {
+        alert("Please enter a location.");
+        return;
+      }
+
+      status.textContent = "Loading map data...";
+      map.eachLayer((layer) => {
+        if (layer instanceof L.Marker || layer instanceof L.Circle) map.removeLayer(layer);
+      });
+
+      try {
+        const res = await fetch("https://script.google.com/macros/s/YOUR_SCRIPT_URL/exec");
+        const json = await res.json();
+        const allSchools = json.schools;
+
+        const selectedSchools = allSchools.filter(s => s.area.toLowerCase() === area.toLowerCase());
+
+        if (selectedSchools.length === 0) {
+          status.textContent = "No schools found in this area.";
+          return;
+        }
+
+        const { lat, lon } = selectedSchools[0];
+        const userLatLng = [lat, lon];
+        map.setView(userLatLng, 13);
+        L.circle(userLatLng, { radius: 10000, color: "red" }).addTo(map);
+
+        selectedSchools.forEach(school => {
+          const distance = map.distance(userLatLng, [school.lat, school.lon]);
+          if (distance <= 10000) {
+            const marker = L.marker([school.lat, school.lon]).addTo(map);
+            marker.bindPopup(`<b>${school.name}</b><br>${school.area}`);
+          }
+        });
+
+        status.textContent = `Showing schools within 10km of "${area}"`;
+
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Failed to load map data.";
+      }
+    });
+  </script>
+</body>
+</html>
