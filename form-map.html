@@ -46,8 +46,8 @@
   <div id="form-container">
     <h2>Find Nearby Schools</h2>
     <form id="locationForm">
-      <input type="text" id="name" placeholder="Your Name" required />
-      <input type="text" id="contact" placeholder="Contact (Phone or Email)" required />
+      <input type="text" id="name" placeholder="Your Name" />
+      <input type="text" id="contact" placeholder="Contact (Phone or Email)" />
       <input type="text" id="location" placeholder="Location (e.g., New York (NY))" required />
       <button type="submit">Search</button>
     </form>
@@ -70,7 +70,7 @@
       }).addTo(map);
     }
 
-    // Load school data from JSON
+    // Load school data
     fetch("https://goutambhattacharyya.github.io/school-map/all-schools.json")
       .then((res) => res.json())
       .then((data) => {
@@ -86,12 +86,10 @@
         document.getElementById("status").textContent = "Failed to load data.";
       });
 
-    // Form handler
+    // Form submission
     document.getElementById("locationForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
-      const name = document.getElementById("name").value.trim();
-      const contact = document.getElementById("contact").value.trim();
       const location = document.getElementById("location").value.trim();
 
       if (!location) {
@@ -103,7 +101,9 @@
       markers.forEach((marker) => map.removeLayer(marker));
       markers = [];
 
-      const results = schoolData.filter((s) => s.area.toLowerCase() === location.toLowerCase());
+      const results = schoolData.schools.filter(
+        (s) => s.area.toLowerCase() === location.toLowerCase()
+      );
 
       if (results.length === 0) {
         alert("No schools found for this location.");
