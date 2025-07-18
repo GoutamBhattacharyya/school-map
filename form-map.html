@@ -71,8 +71,7 @@
     }
 
     // Load school data
-    // fetch("https://goutambhattacharyya.github.io/school-map/all-schools.json")
-    fetch("https://script.google.com/a/macros/learningmate.com/s/AKfycbwKZxq0wCJCLKH70KRBEnksu-LIj6DmPgG3DmTOP-C7vdjjZfT1vKDBD0RsAhGWeFlx/exec")
+    fetch("https://goutambhattacharyya.github.io/school-map/all-schools.json")    
       .then((res) => res.json())
       .then((data) => {
         if (data.schools && Array.isArray(data.schools)) {
